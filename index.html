@@ -13,6 +13,10 @@
     />
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/contentful@latest/dist/contentful.browser.min.js"></script>
+    <script>
+      var exports = {}; // quick fix because 'exports' is not defined in rich-text bundle below
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@contentful/rich-text-html-renderer@14.1.2/dist/rich-text-html-renderer.es5.min.js"></script>
     <link
       href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css"
       rel="stylesheet"
@@ -44,7 +48,7 @@
       }
 
       .mapboxgl-popup-content {
-        text-align: center;
+        text-align: left;
         font-family: sans-serif;
       }
     </style>
@@ -66,53 +70,28 @@
         space: "6v34qe172vks",
         accessToken: "vYDWMMLQ75F3agfli-nyOp29eah00JIvj_qqMwaKDbk",
       });
+      console.log(documentToHtmlString);
       client.getEntries().then(function (entries) {
-        // log the title for all the entries that have it
         entries.items.forEach(function (entry) {
           var el = document.createElement("div");
           el.className = "marker";
-
-          // make a marker for each feature and add to the map
           new mapboxgl.Marker(el)
             .setLngLat([entry.fields.location.lon, entry.fields.location.lat])
             .setPopup(
               new mapboxgl.Popup({ offset: 25 }) // add popups
-                .setHTML("<h3>" + entry.fields.name + "</h3>")
+                .setHTML(
+                  `<h3>${entry.fields.name}</h3><div>${documentToHtmlString(
+                    entry.fields.description
+                  )}</div><p><a href="${entry.fields.url}">${
+                    entry.fields.url
+                  }</a></p><p><a href="email:${entry.fields.email}">${
+                    entry.fields.email
+                  }</a></p>`
+                )
             )
             .addTo(map);
-
-          if (entry.fields.name) {
-            console.log(entry.fields.location);
-          }
         });
       });
-      var geojson = {
-        type: "FeatureCollection",
-        features: [
-          {
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [-0.9859655, 51.5845089],
-            },
-            properties: {
-              title: "Field Kitchen",
-              description: "Nettlebed",
-            },
-          },
-          {
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [-1.017637, 51.6120197],
-            },
-            properties: {
-              title: "Christie-Miller House",
-              description: "Swyncombe",
-            },
-          },
-        ],
-      };
     </script>
   </body>
 </html>
