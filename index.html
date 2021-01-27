@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Bold Bean Co - Stockist Map</title>
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      rel="stylesheet"
+    />
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
+    <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+
+      .marker {
+        background-image: url("./img/mapbox-icon.png");
+        background-size: cover;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .mapboxgl-popup {
+        max-width: 200px;
+      }
+
+      .mapboxgl-popup-content {
+        text-align: center;
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script>
+      mapboxgl.accessToken =
+        "pk.eyJ1IjoiZGlnYnlrIiwiYSI6ImNra2ZjMmxxMjBzMGgyb21uZHltb2wwYjIifQ.tfI899NGWW__KVmKVl8qBg";
+
+      var map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/outdoors-v11",
+        center: [-0.9859655, 51.5845089],
+        zoom: 12,
+      });
+
+      var geojson = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [-0.9859655, 51.5845089],
+            },
+            properties: {
+              title: "Field Kitchen",
+              description: "Nettlebed",
+            },
+          },
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [-1.017637, 51.6120197],
+            },
+            properties: {
+              title: "Christie-Miller House",
+              description: "Swyncombe",
+            },
+          },
+        ],
+      };
+
+      geojson.features.forEach(function (marker) {
+        // create a HTML element for each feature
+        var el = document.createElement("div");
+        el.className = "marker";
+
+        // make a marker for each feature and add to the map
+        new mapboxgl.Marker(el)
+          .setLngLat(marker.geometry.coordinates)
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 }) // add popups
+              .setHTML(
+                "<h3>" +
+                  marker.properties.title +
+                  "</h3><p>" +
+                  marker.properties.description +
+                  "</p>"
+              )
+          )
+          .addTo(map);
+      });
+    </script>
+  </body>
+</html>
