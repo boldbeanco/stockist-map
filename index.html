@@ -12,6 +12,7 @@
       rel="stylesheet"
     />
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/contentful@latest/dist/contentful.browser.min.js"></script>
     <link
       href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css"
       rel="stylesheet"
@@ -61,7 +62,30 @@
         center: [-0.9859655, 51.5845089],
         zoom: 12,
       });
+      var client = contentful.createClient({
+        space: "6v34qe172vks",
+        accessToken: "vYDWMMLQ75F3agfli-nyOp29eah00JIvj_qqMwaKDbk",
+      });
+      client.getEntries().then(function (entries) {
+        // log the title for all the entries that have it
+        entries.items.forEach(function (entry) {
+          var el = document.createElement("div");
+          el.className = "marker";
 
+          // make a marker for each feature and add to the map
+          new mapboxgl.Marker(el)
+            .setLngLat([entry.fields.location.lon, entry.fields.location.lat])
+            .setPopup(
+              new mapboxgl.Popup({ offset: 25 }) // add popups
+                .setHTML("<h3>" + entry.fields.name + "</h3>")
+            )
+            .addTo(map);
+
+          if (entry.fields.name) {
+            console.log(entry.fields.location);
+          }
+        });
+      });
       var geojson = {
         type: "FeatureCollection",
         features: [
@@ -89,27 +113,6 @@
           },
         ],
       };
-
-      geojson.features.forEach(function (marker) {
-        // create a HTML element for each feature
-        var el = document.createElement("div");
-        el.className = "marker";
-
-        // make a marker for each feature and add to the map
-        new mapboxgl.Marker(el)
-          .setLngLat(marker.geometry.coordinates)
-          .setPopup(
-            new mapboxgl.Popup({ offset: 25 }) // add popups
-              .setHTML(
-                "<h3>" +
-                  marker.properties.title +
-                  "</h3><p>" +
-                  marker.properties.description +
-                  "</p>"
-              )
-          )
-          .addTo(map);
-      });
     </script>
   </body>
 </html>
