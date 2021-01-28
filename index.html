@@ -87,7 +87,9 @@
           entries.items.forEach(function (entry) {
             var el = document.createElement("div");
             el.className = "marker";
-            new mapboxgl.Marker(el)
+            new mapboxgl.Marker({
+              anchor: "bottom",
+            })
               .setLngLat([entry.fields.location.lon, entry.fields.location.lat])
               .setPopup(
                 new mapboxgl.Popup({ offset: 25 }) // add popups
@@ -95,9 +97,9 @@
                     `<h3>${entry.fields.name}</h3><div>${documentToHtmlString(
                       entry.fields.description
                     )}</div><p><a href="${entry.fields.url}">${
-                      entry.fields.url
+                      entry.fields.url ? entry.fields.url : ""
                     }</a></p><p><a href="email:${entry.fields.email}">${
-                      entry.fields.email
+                      entry.fields.email ? entry.fields.email : ""
                     }</a></p>`
                   )
               )
