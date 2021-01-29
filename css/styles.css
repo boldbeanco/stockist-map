@@ -3,6 +3,10 @@ body {
   padding: 0;
 }
 
+p {
+  white-space: pre-wrap;
+}
+
 #map {
   position: absolute;
   top: 0;
