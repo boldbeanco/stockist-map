@@ -24,26 +24,65 @@ document.addEventListener("DOMContentLoaded", () => {
       space: "6v34qe172vks",
       accessToken: "vYDWMMLQ75F3agfli-nyOp29eah00JIvj_qqMwaKDbk",
     });
-    console.log(documentToHtmlString);
+    const geojson = {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [],
+      },
+    };
     client.getEntries().then(function (entries) {
-      entries.items.forEach(function (entry) {
-        var el = document.createElement("div");
-        el.className = "marker";
-        new mapboxgl.Marker(el, {
-          anchor: "bottom",
-        })
-          .setLngLat([entry.fields.location.lon, entry.fields.location.lat])
-          .setPopup(
-            new mapboxgl.Popup({ offset: 25 }) // add popups
-              .setHTML(
-                `<h3>${entry.fields.name}</h3><div>${documentToHtmlString(
-                  entry.fields.description
-                )}</div><p><a href="${entry.fields.url}">${
-                  entry.fields.url ? entry.fields.url : ""
-                }</a></p><p><a href="email:${entry.fields.email}">${
-                  entry.fields.email ? entry.fields.email : ""
-                }</a></p>`
-              )
+      // Convert data to geojson
+      geojson.data.features = entries.items.map((entry) => {
+        return {
+          // feature for Mapbox DC
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [entry.fields.location.lon, entry.fields.location.lat],
+          },
+          properties: {
+            title: entry.fields.name,
+            description: entry.fields.description,
+          },
+        };
+      });
+      map.on("load", function () {
+        map.loadImage("/img/boldbeanco-marker.png", (error, image) => {
+          if (error) throw error;
+          map.addImage("marker", image);
+          map.addSource("points", geojson);
+          map.addLayer({
+            id: "stockists",
+            type: "symbol",
+            source: "points",
+            layout: {
+              "icon-image": "marker",
+              "text-field": ["get", "title"],
+              "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+              "text-offset": [0, 2],
+              "text-anchor": "top",
+            },
+          });
+        });
+      });
+      map.on("click", "stockists", function (e) {
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var title = e.features[0].properties.title;
+        var description = e.features[0].properties.description;
+        var url = e.features[0].properties.url;
+        var email = e.features[0].properties.email;
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+        new mapboxgl.Popup({ offset: 25 })
+          .setLngLat(coordinates)
+          .setHTML(
+            `<h3>${title}</h3>${documentToHtmlString(JSON.parse(description))}
+              <p><a href="${url}">${
+              url ? url : ""
+            }</a></p><p><a href="email:${email}">${email ? email : ""}</a></p>
+            `
           )
           .addTo(map);
       });
