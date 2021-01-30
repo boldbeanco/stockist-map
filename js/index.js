@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
           source: "points",
           layout: {
             "icon-image": "marker",
+            "icon-ignore-placement": true,
+            "text-ignore-placement": true,
             "text-field": ["get", "title"],
             "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
             "text-offset": [0, 2],
@@ -71,9 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
             position.coords.longitude,
             position.coords.latitude,
           ]);
-          console.log(currentPosition);
           const nearest = turf.nearestPoint(currentPosition, stockists.data);
-          console.log(nearest);
           //   map.flyTo({
           //     center: nearest.geometry.coordinates,
           //     zoom: 10,
