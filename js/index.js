@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "text-ignore-placement": true,
             "text-field": ["get", "title"],
             "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+            "text-size": 12,
             "text-offset": [0, 2],
             "text-anchor": "top",
           },
