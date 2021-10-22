@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
       features: [],
     },
   };
-  client.getEntries().then(function (entries) {
+  client.getEntries({ limit: 1000 }).then(function (entries) {
     // Convert data to geojson
     geojson.data.features = entries.items.map((entry) => {
       return {
